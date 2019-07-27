@@ -1,0 +1,62 @@
+<video id="player" controls autoplay></video>
+
+<button id="start">Start Camera</button>
+<button id="stop" disabled>Stop Camera</button>
+<button id="capture" disabled>Capture</button>
+
+<canvas id="canvas" width=320 height=240></canvas>
+
+<script>
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+  const player = document.getElementById('player');
+
+  const captureButton = document.getElementById('capture');
+  const startButton = document.getElementById('start');
+  const stopButton = document.getElementById('stop');
+
+  const constraints = {
+    video: true,
+  };
+
+  captureButton.addEventListener('click', () => {
+    context.drawImage(player, 0, 0, canvas.width, canvas.height);
+    stopCamera();
+  });
+
+  startButton.addEventListener('click', () => {
+    startCamera();
+  });
+
+  stopButton.addEventListener('click', () => {
+    stopCamera();
+  });
+
+  function startCamera() {
+    try {
+	navigator.mediaDevices.getUserMedia(constraints)
+	.then((stream) => {
+		// Attach the video stream to the video element and autoplay.
+		player.srcObject = stream;
+		captureButton.disabled = false;
+		startButton.disabled = true;
+		stopButton.disabled = false;
+    });
+    } catch(e) {
+       alert('startCamera() ' + e);
+    }
+  };
+
+  function stopCamera() {
+    try {	
+	// Stop all video streams.
+	player.srcObject.getVideoTracks().forEach(track => track.stop());
+	
+	captureButton.disabled = true;
+	startButton.disabled = false;
+	stopButton.disabled = true;
+    } catch(e) {
+       alert('stopCamera() ' + e);
+    }
+  };
+</script>
